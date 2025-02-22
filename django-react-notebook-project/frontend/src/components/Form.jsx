@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState } from "react"; // In React, useState is a Hook that allows functional components to have state. 
+// It enables components to manage and update local state without needing a class component.
 import api from "../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
@@ -6,7 +7,8 @@ import "../styles/Form.css"
 import LoadingIndicator from "./LoadingIndicator";
 
 function Form({ route, method }) {
-    const [username, setUsername] = useState("");
+    const [username, setUsername] = useState(""); // const [state, setState] = useState(initialValue);
+// state: The current state value.  setState: A function that updates the state.  initialValue: The initial value of the state
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
