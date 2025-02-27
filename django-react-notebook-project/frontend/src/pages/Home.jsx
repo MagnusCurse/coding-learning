@@ -1,54 +1,26 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import Note from "../components/Note"
+import MovieHeader from "../components/MovieHeader";
+import MovieSlider from "../components/MovieSlider";
+import MainWrapper from "../components/MainWrapper";
+import 'flickity/css/flickity.css'; // Import Flickity CSS
+import Flickity from 'flickity';   // Import Flickity JS
 import "../styles/Home.css"
 
 function Home() {
-    const [notes, setNotes] = useState([]);
-    const [content, setContent] = useState("");
-    const [title, setTitle] = useState("");
-
+    
     useEffect(() => {
-        getNotes();
-    }, []);
-
-    const getNotes = () => {
-        api
-            .get("/api/notes/")
-            .then((res) => res.data)
-            .then((data) => {
-                setNotes(data);
-                console.log(data);
-            })
-            .catch((err) => alert(err));
-    };
-
-    const deleteNote = (id) => {
-        api
-            .delete(`/api/notes/delete/${id}/`)
-            .then((res) => {
-                if (res.status === 204) alert("Note deleted!");
-                else alert("Failed to delete note.");
-                getNotes();
-            })
-            .catch((error) => alert(error));
-    };
-
-    const createNote = (e) => {
-        e.preventDefault();
-        api
-            .post("/api/notes/", { content, title })
-            .then((res) => {
-                if (res.status === 201) alert("Note created!");
-                else alert("Failed to make note.");
-                getNotes();
-            })
-            .catch((err) => alert(err));
-    };
+        new Flickity(".book", {
+          cellAlign: "left",
+          contain: true,
+          wrapAround: true,
+        });
+      }, []); // Empty dependency array ensures it runs only once on mount
 
     return (
-        <div>
-            <div>
+        <div className="book-store">
+            {/* <div>
                 <h2>Notes</h2>
                 {notes.map((note) => (
                     <Note note={note} onDelete={deleteNote} key={note.id} />
@@ -77,9 +49,52 @@ function Home() {
                 ></textarea>
                 <br />
                 <input type="submit" value="Submit"></input>
-            </form>
+            </form> */}
+            <MovieHeader />
         </div>
     );
+
+    // const [notes, setNotes] = useState([]);
+    // const [content, setContent] = useState("");
+    // const [title, setTitle] = useState("");
+
+    // useEffect(() => {
+    //     getNotes();
+    // }, []);
+
+    // const getNotes = () => {
+    //     api
+    //         .get("/api/notes/")
+    //         .then((res) => res.data)
+    //         .then((data) => {
+    //             setNotes(data);
+    //             console.log(data);
+    //         })
+    //         .catch((err) => alert(err));
+    // };
+
+    // const deleteNote = (id) => {
+    //     api
+    //         .delete(`/api/notes/delete/${id}/`)
+    //         .then((res) => {
+    //             if (res.status === 204) alert("Note deleted!");
+    //             else alert("Failed to delete note.");
+    //             getNotes();
+    //         })
+    //         .catch((error) => alert(error));
+    // };
+
+    // const createNote = (e) => {
+    //     e.preventDefault();
+    //     api
+    //         .post("/api/notes/", { content, title })
+    //         .then((res) => {
+    //             if (res.status === 201) alert("Note created!");
+    //             else alert("Failed to make note.");
+    //             getNotes();
+    //         })
+    //         .catch((err) => alert(err));
+    // };
 }
 
 export default Home;
