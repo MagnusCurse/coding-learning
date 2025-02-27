@@ -1,0 +1,52 @@
+{
+  "hash": "49034081",
+  "configHash": "658a98ee",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "ff9a396e",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/.store/react@19.0.0/node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "3b50331a",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/.store/react-dom@19.0.0/node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "566c70a9",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/.store/react-router-dom@7.2.0/node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "02aee279",
+      "needsInterop": false
+    },
+    "jwt-decode": {
+      "src": "../../node_modules/.store/jwt-decode@4.0.0/node_modules/jwt-decode/build/esm/index.js",
+      "file": "jwt-decode.js",
+      "fileHash": "8d958571",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/.store/axios@1.7.9/node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "f70e6c09",
+      "needsInterop": false
+    },
+    "flickity": {
+      "src": "../../node_modules/.store/flickity@3.0.0/node_modules/flickity/js/index.js",
+      "file": "flickity.js",
+      "fileHash": "a9a97b1e",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-HJACXWEO": {
+      "file": "chunk-HJACXWEO.js"
+    },
+    "chunk-DC5AMYBS": {
+      "file": "chunk-DC5AMYBS.js"
+    }
+  }
+}
