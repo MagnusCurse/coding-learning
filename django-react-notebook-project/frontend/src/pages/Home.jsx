@@ -1,23 +1,10 @@
-import { useState, useEffect } from "react";
-import api from "../api";
-import Note from "../components/Note"
 import MovieHeader from "../components/MovieHeader";
 import MovieSlider from "../components/MovieSlider";
 import MainWrapper from "../components/MainWrapper";
-import 'flickity/css/flickity.css'; // Import Flickity CSS
-import Flickity from 'flickity';   // Import Flickity JS
 import "../styles/Home.css"
 
 function Home() {
     
-    useEffect(() => {
-        new Flickity(".book", {
-          cellAlign: "left",
-          contain: true,
-          wrapAround: true,
-        });
-      }, []); // Empty dependency array ensures it runs only once on mount
-
     return (
         <div className="book-store">
             {/* <div>
@@ -51,6 +38,7 @@ function Home() {
                 <input type="submit" value="Submit"></input>
             </form> */}
             <MovieHeader />
+            <MovieSlider />
         </div>
     );
 

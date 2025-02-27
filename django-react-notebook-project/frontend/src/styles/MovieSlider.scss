@@ -1,10 +1,15 @@
+@import "Global"; // Import shared styles
+.home {
+  @extend %display;
+}
+
 .book-slide {
     width: 100%;
-   }
+}
    
-   .book {
-     background: #fff;
-   }
+.book {
+    background: #fff;
+}
    
    .book-cell {
     position: relative;
