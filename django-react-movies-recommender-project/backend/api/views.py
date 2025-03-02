@@ -29,8 +29,8 @@ class NoteDelete(generics.DestroyAPIView):
         user = self.request.user
         return Note.objects.filter(author=user)
 
-
-class CreateUserView(generics.CreateAPIView):
+# A class-based view to handle user creation (signup) for all users (public access)
+class CreateUserView(generics.CreateAPIView): 
     queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    serializer_class = UserSerializer # Specify the queryset to fetch all users
+    permission_classes = [AllowAny] # Allows any user (even unauthenticated) to access this view
