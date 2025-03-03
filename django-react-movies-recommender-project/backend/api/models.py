@@ -22,7 +22,7 @@ class Movie(models.Model):
     genres = models.TextField()
 
     class Meta:
-        db_table = 'movie'
+        db_table = 'tb_movie'
 
     def __str__(self):
         return self.title
@@ -44,7 +44,7 @@ class Rating(models.Model):
 
     # Meta class to specify the table name
     class Meta:
-        db_table = 'rating'  # Optional: You can specify the table name here
+        db_table = 'tb_rating'  # Optional: You can specify the table name here
     
     # String representation of the model
     def __str__(self):
