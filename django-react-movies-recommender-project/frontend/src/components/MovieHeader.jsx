@@ -10,10 +10,10 @@ function MovieHeader() {
                 <path d="M6 9l6 6 6-6" /></svg>
                 </div>
                 <div className="search-bar">
-                <input type="text" placeholder="Search Book" />
+                <input type="text" placeholder="Search Movie" />
                 </div>
             </div>
-            <div className="header-title">read<span>books</span></div>
+            <div className="header-title"> Movies <span> Recommender </span></div>
             <div className="profile">
                 <div className="user-profile">
                 {/* Additionally, in JSX, the <img> tag should be self-closing. In HTML, <img> tags can be self-closing, 

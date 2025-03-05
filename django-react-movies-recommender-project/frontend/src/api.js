@@ -2,14 +2,13 @@
 import axios from "axios";
 import { ACCESS_TOKEN } from "./constants";
 
-// Defining the default API URL
 const apiUrl = "/choreo-apis/awbo/backend/rest-api-be2/v1.0";
-// const apiUrl = "import.meta.env.VITE_API_URL";
 
 // Creating an instance of axios with custom configuration
 const api = axios.create({
   // Setting the base URL for the API requests
   // It uses an environment variable `VITE_API_URL` if it exists, otherwise falls back to the default `apiUrl`
+  // The Deafult Url is: http://127.0.0.1:8000
   baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : apiUrl,
 });
 
