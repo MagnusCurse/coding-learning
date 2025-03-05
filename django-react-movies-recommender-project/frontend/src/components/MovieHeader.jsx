@@ -1,6 +1,43 @@
 import "../styles/MovieHeader.scss"
+import { useState } from "react";
+import api from "../api";
 
 function MovieHeader() {
+    const [searchTerm, setSearchTerm] = useState("")
+    const [recommendations, setRecommendations] = useState([]);
+
+    // function to handle input change
+    const handleInputChange = (event) => {
+        setSearchTerm(event.target.value);
+        console.log(event.target.value)
+    };
+
+    // function to handle Enter key press
+    const handleKeyPress = (event) => {
+        if (event.key === "Enter") {
+            // handleSearch();
+            console.log('call the handleSearch function')
+        }
+    };
+
+    const handleSearch = async () => {
+        if(!searchTerm.trim()) {
+            return; // prevent empty searches
+        }
+        try {
+            const response = await api.get(`/movie/recommendations/`, {
+                params: {
+                    title: searchTerm // sending search term as a query
+                }
+            });
+            setRecommendations(response.data.recommended_movies); // get the data from the response
+        } catch (error) {
+            console.log("Error fetching recommendations:", error);
+        }
+    }
+
+    
+
     return (
         <div className="header">
             <div className="browse">
@@ -10,7 +47,14 @@ function MovieHeader() {
                 <path d="M6 9l6 6 6-6" /></svg>
                 </div>
                 <div className="search-bar">
-                <input type="text" placeholder="Search Movie" />
+                    {/* search movie input */}
+                    <input
+                        type="text"
+                        placeholder="Search Movie"
+                        value={searchTerm}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyPress} // Listen for Enter key
+                    />
                 </div>
             </div>
             <div className="header-title"> Movies <span> Recommender </span></div>

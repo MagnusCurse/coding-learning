@@ -10,14 +10,15 @@ from rest_framework.response import Response
 import pandas as pd
 import numpy as np
 
-movie_pivot_indexed_collected = pd.read_pickle("../models/models_data/movie_pivot_indexed_collected.pkl")
-movie_sparse = pd.read_pickle("../models/models_data/movie_sparse.pkl")
-
-model = NearestNeighbors(algorithm='brute', metric='cosine')
-model.fit(movie_sparse)
 
 @api_view(['GET'])
 def get_movie_recommendations(request):
+    movie_pivot_indexed_collected = pd.read_pickle("../models/models_data/movie_pivot_indexed_collected.pkl")
+    movie_sparse = pd.read_pickle("../models/models_data/movie_sparse.pkl")
+
+    model = NearestNeighbors(algorithm='brute', metric='cosine')
+    model.fit(movie_sparse)
+
     """
     API endpoint to get movie recommendations based on a movie title provided as a query parameter.
     Example URL: /api/recommendations/?title=Inception
