@@ -1,4 +1,4 @@
-import "../styles/MovieHeader.scss"
+import "../styles/MovieHeader.scss";
 import { useState } from "react";
 import api from "../api";
 
@@ -15,8 +15,8 @@ function MovieHeader() {
     // function to handle Enter key press
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
-            // handleSearch();
-            console.log('call the handleSearch function')
+            handleSearch();
+            console.log(recommendations)
         }
     };
 
@@ -25,12 +25,12 @@ function MovieHeader() {
             return; // prevent empty searches
         }
         try {
-            const response = await api.get(`/movie/recommendations/`, {
+            const response = await api.get(`/api/movie/recommendations/`, {
                 params: {
                     title: searchTerm // sending search term as a query
                 }
             });
-            setRecommendations(response.data.recommended_movies); // get the data from the response
+            setRecommendations(response.data.recommendations); // get the data from the response
         } catch (error) {
             console.log("Error fetching recommendations:", error);
         }

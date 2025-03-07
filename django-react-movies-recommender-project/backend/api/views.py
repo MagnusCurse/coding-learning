@@ -10,9 +10,25 @@ from rest_framework.response import Response
 import pandas as pd
 import numpy as np
 
+from api.movie_recommendation_engine import recommend_movies
 
 @api_view(['GET'])
+def fetch_recommendations(request):
+    try:
+        movie_title = request.query_params.get("title")
+        recommendations = recommend_movies(movie_title)
+        return Response({'recommendations': recommendations})
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+    
+"""
+I don't know why when I doing this, I always can't find the .pkl file, even though I actually have it, so this method can't work
+Hoping I can find a solution in the future
+"""
+@api_view(['GET'])
 def get_movie_recommendations(request):
+    print('get the request')
     movie_pivot_indexed_collected = pd.read_pickle("../models/models_data/movie_pivot_indexed_collected.pkl")
     movie_sparse = pd.read_pickle("../models/models_data/movie_sparse.pkl")
 
