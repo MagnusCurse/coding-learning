@@ -9,6 +9,9 @@ from sklearn.neighbors import NearestNeighbors
 from rest_framework.response import Response
 import pandas as pd
 import numpy as np
+from django.db import connection
+from rest_framework import status
+
 
 from api.movie_recommendation_engine import recommend_movies
 
@@ -20,6 +23,29 @@ def fetch_recommendations(request):
         return Response({'recommendations': recommendations})
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
+@api_view(['GET'])
+def fetch_movie_id(request):
+    movie_title = request.query_params.get("title")
+
+    if not movie_title:
+        return Response(
+            {"error": "Title parameter is required"},
+            status = status.HTTP_400_BAD_REQUEST
+        )
+    
+    with connection.cursor() as cursor:
+        cursor.execute("select movie_id from tb_movie where title = %s", [movie_title])
+        row = cursor.fetchone()
+
+    if row:
+        movie_id = row[0]
+        return Response({"movie_id": movie_id}, status=status.HTTP_200_OK)
+    else:
+        return Response(
+            {"error": "Movie not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
 
     
 """
