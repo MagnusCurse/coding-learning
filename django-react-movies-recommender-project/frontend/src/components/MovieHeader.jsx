@@ -27,7 +27,6 @@ function MovieHeader() {
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
             handleSearch();
-            console.log(recommendations);
         }
     };
 
@@ -51,7 +50,7 @@ function MovieHeader() {
                     });
 
                     const movie_id = movieIdResponse.data.movie_id;
-                    console.log("movie_id:" + movie_id)
+                    // console.log("movie_id:" + movie_id) // this will log every movie_id of the recommendation
 
                     // fetch rating using the movie_id
                     const ratingResponse = await api.get('/api/movie/fetch_movie_ratings/', {
@@ -62,11 +61,11 @@ function MovieHeader() {
                     console.log("top_ratings:" + top_ratings)
 
                     // return the combined data
-                    return {
-                        movie_title,
-                        movie_id,
-                        rating
-                    };
+                    // return {
+                    //     movie_title,
+                    //     movie_id,
+                    //     rating
+                    // };
                 })
             );
 
