@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+
 # Define the Note model that will be used to store notes in the database
 class Note(models.Model):
     title = models.CharField(max_length=100)
@@ -30,6 +32,9 @@ class Movie(models.Model):
 
 # Rating model to store ratings data
 class Rating(models.Model):
+    # Django will automatically use the 'id' column as the primary key.
+    # id = models.IntegerField(primary_key=True) 
+
     # userId is an integer field and can be used as a foreign key to a User model if you have one
     user_id = models.IntegerField()
     
@@ -45,6 +50,13 @@ class Rating(models.Model):
     # Meta class to specify the table name
     class Meta:
         db_table = 'tb_rating'  # Optional: You can specify the table name here
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user_id', 'movie_id'], 
+                name='unique_user_movie'
+            )
+        ]
+
     
     # String representation of the model
     def __str__(self):

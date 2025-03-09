@@ -1,4 +1,4 @@
-from .models import Note
+from .models import Note, Movie, Rating
 from django.contrib.auth.models import User
 from rest_framework import generics
 from .serializers import UserSerializer, NoteSerializer
@@ -9,8 +9,8 @@ from sklearn.neighbors import NearestNeighbors
 from rest_framework.response import Response
 import pandas as pd
 import numpy as np
-from django.db import connection
 from rest_framework import status
+
 
 
 from api.movie_recommendation_engine import recommend_movies
@@ -34,20 +34,42 @@ def fetch_movie_id(request):
             status = status.HTTP_400_BAD_REQUEST
         )
     
-    with connection.cursor() as cursor:
-        cursor.execute("select movie_id from tb_movie where title = %s", [movie_title])
-        row = cursor.fetchone()
-
-    if row:
-        movie_id = row[0]
-        return Response({"movie_id": movie_id}, status=status.HTTP_200_OK)
-    else:
+    try:
+        movie = Movie.objects.get(title = movie_title) # use Django ORM to fetch the movie_id
+        return Response({"movie_id": movie.movie_id}, status=status.HTTP_200_OK)
+    except Movie.DoesNotExist:
         return Response(
             {"error": "Movie not found"},
             status=status.HTTP_404_NOT_FOUND
         )
-
     
+
+
+@api_view(['GET'])
+def fetch_rating(request):
+    movie_id = request.query_params.get("movie_id")
+
+    if not movie_id:
+        return Response(
+            {"error": "Can't find the movie_id through the movie_title"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    ratings = Rating.objects.filter(movie_id = movie_id).order_by('-rating')[:5]
+
+    if ratings.exists():
+        if ratings.exists():
+            # if ratings exist, create a list of dictionaries containing 'user_id' and 'rating' for each rating.
+            top_ratings = [{"user_id": rating.user_id, "rating": rating.rating} for rating in ratings]
+            # return a 200 OK response with the 'movie_id' and the top 5 ratings.
+            return Response({"movie_id": movie_id, "top_ratings": top_ratings}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+            {"error": "No ratings found for the given movie_id"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+
 """
 I don't know why when I doing this, I always can't find the .pkl file, even though I actually have it, so this method can't work
 Hoping I can find a solution in the future
@@ -97,7 +119,7 @@ def get_movie_recommendations(request):
 
     except IndexError:
         return Response({'error': 'Invalid movie index'}, status=400)
-    
+    movie_title = request.query_params.get("title")
 
 # NoteListCreate is a class-based view in Django REST Framework (DRF) that combines two functionalities:
 # Listing notes (via a GET request).

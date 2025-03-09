@@ -49,7 +49,7 @@ def initialize():
 def read_movies():
     return spark.read \
         .format("jdbc") \
-        .option("url", "jdbc:mysql://localhost:3307/db_movie_recommender_sys?useSSL=false&serverTimezone=UTC") \
+        .option("url", "jdbc:mysql://localhost:3307/db_movie_recommender_sys?useSSL=true&serverTimezone=UTC&allowPublicKeyRetrieval=true") \
         .option("dbtable", "tb_movie") \
         .option("user", "root") \
         .option("password", "137162") \

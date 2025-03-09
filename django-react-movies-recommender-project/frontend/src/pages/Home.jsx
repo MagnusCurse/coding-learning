@@ -38,7 +38,7 @@ function Home() {
                 <input type="submit" value="Submit"></input>
             </form> */}
             <MovieHeader />
-            <MovieSlider />
+            {/* <MovieSlider /> */}
             <MainWrapper />
         </div>
     );
