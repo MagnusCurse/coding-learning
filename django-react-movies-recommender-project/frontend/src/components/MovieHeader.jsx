@@ -2,31 +2,76 @@ import "../styles/MovieHeader.scss";
 import "../styles/MovieSlider.scss"
 import { useState, useEffect } from "react";
 import api from "../api";
+import React, { useRef } from 'react';  // Add this at the very top of your file
 import 'flickity/css/flickity.css'; // Import Flickity CSS
 import Flickity from 'flickity';   // Import Flickity JS
 
 function MovieHeader() {
-    useEffect(() => {
-            new Flickity(".book", {
-              cellAlign: "left",
-              contain: true,
-              wrapAround: true,
-            });
-    }, []); // Empty dependency array ensures it runs only once on mount
-
     const [searchTerm, setSearchTerm] = useState("")
     const [recommendations, setRecommendations] = useState([]);
+
+    const flickityRef = useRef(null);
+    const carouselRef = useRef(null);
+    const isMounted = useRef(false); // Track mount state
+
+    // Initialize/destroy Flickity
+    useEffect(() => {
+        isMounted.current = true;
+        
+        const initFlickity = () => {
+        if (!carouselRef.current || !isMounted.current) return;
+        
+        // Destroy existing instance first
+        if (flickityRef.current) {
+            flickityRef.current.destroy();
+            flickityRef.current = null;
+        }
+    
+        // Add slight delay for DOM update
+        setTimeout(() => {
+            if (carouselRef.current && isMounted.current) {
+            flickityRef.current = new Flickity(carouselRef.current, {
+                cellAlign: 'left',
+                contain: true,
+                freeScroll: true,
+                imagesLoaded: true
+            });
+            }
+        }, 50);
+        };
+    
+        initFlickity();
+    
+        return () => {
+            isMounted.current = false;
+            if (flickityRef.current) {
+                flickityRef.current.destroy();
+            }
+        };
+    }, [recommendations]); // Re-run when recommendations change
+
+    // useEffect(() => {
+    //     const flkty = new Flickity('.js-flickity', {
+    //       cellAlign: 'left',
+    //       contain: true,
+    //       freeScroll: true
+    //     });
+        
+    //     return () => flkty.destroy(); // Cleanup
+    //   }, [recommendations]); // Re-initialize when recommendations change
+
 
     // function to handle input change
     const handleInputChange = (event) => {
         setSearchTerm(event.target.value);
-        console.log(event.target.value) 
+        // console.log(event.target.value);
     };
 
     // function to handle Enter key press
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
             handleSearch();
+            console.log(JSON.stringify(recommendations, null, 2)); //
         }
     };
 
@@ -35,6 +80,9 @@ function MovieHeader() {
             return; // prevent empty searches
         }
         try {
+            // reset recommendations first
+            setRecommendations([]); // 👈 critical reset
+
             const recommendationsResponse = await api.get(`/api/movie/recommendations/`, {
                 params: {
                     title: searchTerm // sending search term as a query
@@ -58,14 +106,22 @@ function MovieHeader() {
                     });
 
                     const top_ratings = ratingResponse.data.top_ratings || []; // Default to empty array if no ratings exist
-                    console.log("top_ratings:" + top_ratings)
+                    
+                    // if you want to transform the data:
+                    const processedRatings = top_ratings.map(rating => ({
+                        userId: rating.user_id,
+                        score: rating.rating
+                    }));
 
-                    // return the combined data
-                    // return {
-                    //     movie_title,
-                    //     movie_id,
-                    //     rating
-                    // };
+                    console.log("Movie ID:", ratingResponse.data.movie_id);
+                    console.log("Top Ratings:", processedRatings);
+
+                    // Return the structured data
+                    return {
+                        title: movie_title,
+                        id: movie_id,
+                        ratings: processedRatings,
+                    };
                 })
             );
 
@@ -113,7 +169,7 @@ function MovieHeader() {
             </div>
 
             {/* MovieSlider */}
-            <div className="book-slide">
+            {/* <div className="book-slide">
                 <div className="book js-flickity">
                     <div className="book-cell">
                         <div className="book-img">
@@ -250,6 +306,64 @@ function MovieHeader() {
                         <div className="book-see book-purple">See The Book</div>
                         </div>
                     </div>
+                </div>
+            </div> */}
+
+            <div className="book-slide">
+                <div ref={carouselRef} 
+                     className="book js-flickity"
+                     key={JSON.stringify(recommendations)} 
+                     style={{ 
+                        height: '500px',
+                        visibility: recommendations.length ? 'visible' : 'hidden'
+                      }} 
+                >
+                    {recommendations.map((movie) => {
+                        const average = movie.ratings.length > 0 
+                        ? movie.ratings.reduce((s, r) => s + r.score, 0) / movie.ratings.length
+                        : 0;
+
+                        return (
+                        <div className="book-cell" key={movie.id} style={{ width: '300px' }}>
+                            <div className="book-img">
+                                {/* <img 
+                                    src={movie.imageUrl || 'https://via.placeholder.com/150x200'} 
+                                    alt={movie.title}
+                                    className="book-photo"
+                                /> */}
+                            </div>
+                            <div className="book-content">
+                                <div className="book-title"> { movie.title } </div>
+                                
+                                <div className="rate">
+                                    <fieldset className={`rating ${movie.ratingColor}`}>
+                                    {[5, 4, 3, 2, 1].map((star) => (
+                                        <React.Fragment key={star}>
+                                        <input 
+                                            type="radio"
+                                            id={`star${star}-${movie.id}`}
+                                            checked={average >= star}
+                                            readOnly
+                                            className="visually-hidden"
+                                        />
+                                        <label 
+                                            className="star" 
+                                            htmlFor={`star${star}-${movie.id}`}
+                                        />
+                                        </React.Fragment>
+                                    ))}
+                                    </fieldset>
+                                    <span className="book-voters">
+                                    {movie.ratings.length} voters (Avg: {average.toFixed(1)})
+                                    </span>
+                                </div>
+
+                                <div className="book-sum"> { movie.summary } </div>
+                                <div className={`book-see ${movie.buttonClass}`}> See The Movie </div>
+                            </div>
+                        </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

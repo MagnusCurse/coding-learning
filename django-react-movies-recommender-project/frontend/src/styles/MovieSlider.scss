@@ -10,38 +10,44 @@
 .book {
     background: #fff;
 }
+
+/* Essential Flickity container styles */
+.book.js-flickity {
+  width: 100%;
+  min-height: 500px; /* Match your JS height */
+}
    
-   .book-cell {
-    position: relative;
-    display: flex;
-    padding: 25px;
-    width: 40%;
-    height: 250px;
-    margin-right: 1px;
-    &:nth-child(1) {
-     background-color: #fbadaf;
-    }
-    &:nth-child(2) {
-     background-color: #a4e0eb;
-    }
-    &:nth-child(3) {
-     background-color: #edb9d6;
-    }
-    &:nth-child(4) {
-     background-color: #fdca95;
-    }
-    &:nth-child(5) {
-     background-color: #cbb5e2;
-    }
-   }
+.book-cell {
+  position: relative;
+  display: flex;
+  padding: 25px;
+  width: 40%;
+  height: 250px;
+  margin-right: 1px;
+  &:nth-child(1) {
+    background-color: #fbadaf;
+  }
+  &:nth-child(2) {
+    background-color: #a4e0eb;
+  }
+  &:nth-child(3) {
+    background-color: #edb9d6;
+  }
+  &:nth-child(4) {
+    background-color: #fdca95;
+  }
+  &:nth-child(5) {
+    background-color: #cbb5e2;
+  }
+}
    
-   .flickity-page-dots {
-    display: none;
-   }
+.flickity-page-dots {
+  display: none;
+}
    
-   .flickity-prev-next-button .arrow {
-    fill: #d6d6d6;
-   }
+.flickity-prev-next-button .arrow {
+  fill: #d6d6d6;
+}
    
    .flickity-prev-next-button svg {
     left: 25%;
