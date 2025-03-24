@@ -34,7 +34,9 @@ function MovieHeader() {
                 cellAlign: 'left',
                 contain: true,
                 freeScroll: true,
-                imagesLoaded: true
+                wrapAround: true, // 👈 Enable infinite loop
+                imagesLoaded: true,
+                pageDots: false // ← This removes the dots completely
             });
             }
         }, 50);
@@ -314,7 +316,7 @@ function MovieHeader() {
                      className="book js-flickity"
                      key={JSON.stringify(recommendations)} 
                      style={{ 
-                        height: '500px',
+                        height: '290px',
                         visibility: recommendations.length ? 'visible' : 'hidden'
                       }} 
                 >
@@ -324,8 +326,9 @@ function MovieHeader() {
                         : 0;
 
                         return (
-                        <div className="book-cell" key={movie.id} style={{ width: '300px' }}>
+                        <div className="book-cell" key={movie.id}>
                             <div className="book-img">
+                                <img src="https://images-na.ssl-images-amazon.com/images/I/81WcnNQ-TBL.jpg" alt="" className="book-photo" />
                                 {/* <img 
                                     src={movie.imageUrl || 'https://via.placeholder.com/150x200'} 
                                     alt={movie.title}
@@ -334,32 +337,29 @@ function MovieHeader() {
                             </div>
                             <div className="book-content">
                                 <div className="book-title"> { movie.title } </div>
-                                
+                                <div className="book-author">by Claudia Gray</div>
                                 <div className="rate">
-                                    <fieldset className={`rating ${movie.ratingColor}`}>
-                                    {[5, 4, 3, 2, 1].map((star) => (
-                                        <React.Fragment key={star}>
-                                        <input 
-                                            type="radio"
-                                            id={`star${star}-${movie.id}`}
-                                            checked={average >= star}
-                                            readOnly
-                                            className="visually-hidden"
-                                        />
-                                        <label 
-                                            className="star" 
-                                            htmlFor={`star${star}-${movie.id}`}
-                                        />
-                                        </React.Fragment>
-                                    ))}
+                                    {/* Got some error with the show of the stars */}
+                                    <fieldset className="rating blue">
+                                        <input type="checkbox" id="star6" name="rating" value="5" />
+                                        <label className="full1" htmlFor="star6"></label>
+                                        <input type="checkbox" id="star7" name="rating" value="4" />
+                                        <label className="full1" htmlFor="star7"></label>
+                                        <input type="checkbox" id="star8" name="rating" value="3" />
+                                        <label className="full1" htmlFor="star8"></label>
+                                        <input type="checkbox" id="star9" name="rating" value="2" />
+                                        <label className="full1" htmlFor="star9"></label>
+                                        <input type="checkbox" id="star10" name="rating" value="1" />
+                                        <label className="full1" htmlFor="star10"></label>
                                     </fieldset>
+
                                     <span className="book-voters">
-                                    {movie.ratings.length} voters (Avg: {average.toFixed(1)})
+                                    {movie.ratings.length} ratings (Avg: {average.toFixed(1)})
                                     </span>
                                 </div>
 
-                                <div className="book-sum"> { movie.summary } </div>
-                                <div className={`book-see ${movie.buttonClass}`}> See The Movie </div>
+                                <div className="book-sum"> The hunt htmlFor each splinter of Paul's soul sends Marguerite racing through a war-torn San Francisco.  </div>
+                                <div className={`book-see book-blue`}> See The Movie </div>
                             </div>
                         </div>
                         );
