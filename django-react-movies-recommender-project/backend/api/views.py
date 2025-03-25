@@ -1,19 +1,18 @@
-from .models import Note, Movie, Rating
+from .models import Note, Movie, Rating, Link
 from django.contrib.auth.models import User
 from rest_framework import generics
 from .serializers import UserSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny # DRF's permission classes.
-
+import requests
 from rest_framework.decorators import api_view
 from sklearn.neighbors import NearestNeighbors
 from rest_framework.response import Response
 import pandas as pd
 import numpy as np
 from rest_framework import status
-
-
-
 from api.movie_recommendation_engine import recommend_movies
+
+API_KEY = "9d0e3e371ecee50a7c190f46aeafadec"
 
 @api_view(['GET'])
 def fetch_recommendations(request):
@@ -23,6 +22,7 @@ def fetch_recommendations(request):
         return Response({'recommendations': recommendations})
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
 
 @api_view(['GET'])
 def fetch_movie_id(request):
@@ -68,6 +68,59 @@ def fetch_rating(request):
             {"error": "No ratings found for the given movie_id"},
             status=status.HTTP_404_NOT_FOUND
         )
+
+
+@api_view(['GET'])
+def fetch_image_url(request):
+    movie_id = request.query_params.get("movie_id")
+
+    if not movie_id:
+        return Response(
+            {"error": "Can't find the movie_id through the movie_title"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    
+    link = Link.objects.get(movie_id=movie_id)
+
+    tmdb_id = link.tmdb_id
+
+    response = requests.get(
+        f"https://api.themoviedb.org/3/movie/{tmdb_id}",
+        params={"api_key": API_KEY}
+    ).json()
+
+    poster_path = response.get("poster_path")
+    poster_url = f"https://image.tmdb.org/t/p/w500/{poster_path}"
+
+    if poster_url: # check whether poster_url exists and is not empty or None.
+        return Response({"poster_url": poster_url}, status=status.HTTP_200_OK)
+    else:
+        return Response(
+            {"error": "poster_url doesn't exist"},
+            status=status.HTTP_404_NOT_FOUND)
+
+
+
+    
+   
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
 
 
 """

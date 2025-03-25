@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Note, Movie, Rating
+from .models import Note, Movie, Rating, Link
 
 
 # Serializers in DRF are used to convert complex data types like Django models into Python data types 
@@ -37,3 +37,10 @@ class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating  # Specify the Rating model
         fields = ["user_id", "movie_id", "rating", "timestamp"]  # Fields to include in the serialized data
+
+
+class LinkSerializer(serializers.ModelSerializer):
+    # The Meta class defines the model and fields to serialize
+    class Meta:
+        model = Rating  # Specify the Rating model
+        fields = ["movie_id", "imbd_id", "tmbd_id"]  # Fields to include in the serialized data

@@ -62,3 +62,16 @@ class Rating(models.Model):
     def __str__(self):
         return f"Rating {self.rating} for movie {self.movie_id} by user {self.user_id}"
 
+
+class Link(models.Model):
+    movie_id = models.IntegerField()
+
+    imdb_id = models.CharField()
+
+    tmdb_id = models.CharField()
+
+    # Meta class to specify the table name
+    class Meta:
+        db_table = 'tb_link'  
+        
+

@@ -52,17 +52,6 @@ function MovieHeader() {
         };
     }, [recommendations]); // Re-run when recommendations change
 
-    // useEffect(() => {
-    //     const flkty = new Flickity('.js-flickity', {
-    //       cellAlign: 'left',
-    //       contain: true,
-    //       freeScroll: true
-    //     });
-        
-    //     return () => flkty.destroy(); // Cleanup
-    //   }, [recommendations]); // Re-initialize when recommendations change
-
-
     // function to handle input change
     const handleInputChange = (event) => {
         setSearchTerm(event.target.value);
@@ -77,6 +66,12 @@ function MovieHeader() {
         }
     };
 
+    // function to get the image url of the poster
+    const getImgUrlByIMTB = () => {
+
+    }
+
+    // function to handle the result of the search
     const handleSearch = async () => {
         if(!searchTerm.trim()) {
             return; // prevent empty searches
