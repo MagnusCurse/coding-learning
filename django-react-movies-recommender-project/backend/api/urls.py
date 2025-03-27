@@ -8,5 +8,6 @@ urlpatterns = [
     path("notes/delete/<int:pk>/", views.NoteDelete.as_view(), name="delete-note"),
     path("movie/recommendations/", views.fetch_recommendations, name="get_movie_recommendations"),
     path("movie/fetch_movie_id/", views.fetch_movie_id, name="fetch_movie_id"),
-    path("movie/fetch_movie_ratings/", views.fetch_rating, name="fetch_rating")
+    path("movie/fetch_movie_ratings/", views.fetch_rating, name="fetch_rating"),
+    path("movie/fetch_image_url/", views.fetch_image_url, name="fetch_image_url")
 ]

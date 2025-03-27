@@ -16,6 +16,7 @@ class Note(models.Model):
         return self.title
 
 
+# Movie model to store movies data
 class Movie(models.Model):
     movie_id = models.IntegerField(primary_key=True)
 
@@ -63,12 +64,13 @@ class Rating(models.Model):
         return f"Rating {self.rating} for movie {self.movie_id} by user {self.user_id}"
 
 
+# Link model to store links data
 class Link(models.Model):
-    movie_id = models.IntegerField()
+    movie_id = models.IntegerField(primary_key=True)
 
-    imdb_id = models.CharField()
+    imbd_id = models.CharField(max_length=255)
 
-    tmdb_id = models.CharField()
+    tmbd_id = models.CharField(max_length=255)
 
     # Meta class to specify the table name
     class Meta:

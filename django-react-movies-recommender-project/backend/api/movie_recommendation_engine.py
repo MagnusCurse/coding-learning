@@ -11,8 +11,14 @@ knn_model = None
 movie_title_to_index = {}
 movie_titles = []
 
+genre_sparse = None
+genre_knn_model = None
+genre_movie_titles = []
+genre_title_to_index = {}
+
 def initialize():
     global spark, movie_sparse, knn_model, movie_title_to_index, movie_titles
+    global genre_sparse, genre_knn_model, genre_movie_titles, genre_title_to_index
 
     # stop existing Spark session if any
     if spark is not None:

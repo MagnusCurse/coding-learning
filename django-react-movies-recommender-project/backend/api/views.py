@@ -83,10 +83,10 @@ def fetch_image_url(request):
     
     link = Link.objects.get(movie_id=movie_id)
 
-    tmdb_id = link.tmdb_id
+    tmbd_id = link.tmbd_id
 
     response = requests.get(
-        f"https://api.themoviedb.org/3/movie/{tmdb_id}",
+        f"https://api.themoviedb.org/3/movie/{tmbd_id}",
         params={"api_key": API_KEY}
     ).json()
 
