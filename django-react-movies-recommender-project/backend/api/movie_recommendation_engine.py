@@ -50,6 +50,33 @@ def initialize():
     knn_model = NearestNeighbors(algorithm='brute', metric='cosine')
     knn_model.fit(movie_sparse)
 
+    # ----------------------------------------------- below is movie recommender by genre -----------------------------------------------
+
+    # process genres for content-based filtering
+    # extract unique movies with genres from the filtered ratings_with_movies
+    unique_movies_with_genres = ratings_with_movies.select("title", "genres").dropDuplicates(['title'])
+
+    # split genres into array and explode to individual rows
+    from pyspark.sql import functions as F
+    movies_genres = unique_movies_with_genres.withColumn("genre", F.explode(F.split(F.col("genres"), r"\|")))
+
+    # pivot to create binary genre columns
+    genre_pivot = movies_genres.groupBy("title").pivot("genre").agg(F.count("genre")).fillna(0)
+
+    # convert to Pandas DataFrame for processing
+    genre_pivot_pd = genre_pivot.toPandas()
+
+    # prepare genre matrix and titles
+    genre_columns = [col for col in genre_pivot_pd.columns if col != 'title']
+    genre_matrix = genre_pivot_pd[genre_columns].values.astype(np.int8)
+    genre_sparse = csr_matrix(genre_matrix)
+    genre_movie_titles = genre_pivot_pd['title'].tolist()
+    genre_title_to_index = {title: idx for idx, title in enumerate(genre_movie_titles)}
+
+    # train KNN model for genres using Jaccard similarity
+    genre_knn_model = NearestNeighbors(algorithm='brute')
+    genre_knn_model.fit(genre_sparse)
+
     print("All data have successfully initialized!!")
 
 def read_movies():
@@ -107,3 +134,20 @@ def recommend_movies(movie_title):
 
     distances, indices = knn_model.kneighbors(movie_sparse[idx], n_neighbors=6)
     return [movie_titles[i] for i in indices[0] if i != idx][:5]  # exclude self and get top 5
+
+def recommend_by_genres(movie_title):
+    global genre_title_to_index, genre_knn_model, genre_sparse, genre_movie_titles
+
+    if not genre_title_to_index:
+        return ["system not initialized"]
+
+    idx = genre_title_to_index.get(movie_title)
+    if idx is None:
+        return ["movie not found"]
+
+    # find nearest neighbors
+    distances, indices = genre_knn_model.kneighbors(genre_sparse[idx], n_neighbors=11)  # Get more to filter out
+
+    # exclude the movie itself and return top 10
+    recommendations = [genre_movie_titles[i] for i in indices[0] if i != idx][:10]
+    return recommendations

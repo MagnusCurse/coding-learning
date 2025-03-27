@@ -1,6 +1,41 @@
 import '../styles/MainWrapper.scss'
+import { useState, useEffect } from "react";
+import api from "../api";
 
 function MainWrapper() {
+    const [recommendations, setRecommendations] = useState([]);
+
+     // this will run once when the component mounts
+     useEffect(() => {
+        
+        // fetchRecommendationsByGenre();
+    }, []);  // Empty dependency array = runs only once
+
+    // Handle genre click
+    const handleGenreClick = (e) => {
+        e.preventDefault();
+        const genre = e.target.textContent.trim();
+        fetchRecommendationsByGenre(genre);
+    };
+
+    const fetchRecommendationsByGenre = async (genre) => {
+        try {
+            // called the method and get the recommendations by genre response
+            const recommendationsResponse = await api.get(`/api/movie/recommendations_genre/`, {
+                params: {
+                    genre: genre
+                }
+            });
+            const data = recommendationsResponse.data.recommendations;
+            console.log(data); // 
+            // extract the data of recommendations in response
+            const recommendationsByGenre = data;
+            setRecommendations(recommendationsByGenre); // set the recommendations
+        } catch (error) {
+            console.error('Error fetching recommendations:', error);
+        }
+    };
+
     return (
         <div className="main-wrapper">
             <div className="books-of">
@@ -76,14 +111,22 @@ function MainWrapper() {
 
             <div className="popular-books">
                 <div className="main-menu">
-                    <div className="genre">Popular by Genre</div>
+                    {/* <div className="genre">Popular by Genre</div> */}
                     <div className="book-types">
-                        <a href="#" className="book-type active"> All Genres</a>
-                        <a href="#" className="book-type"> Business</a>
-                        <a href="#" className="book-type"> Science</a>
-                        <a href="#" className="book-type"> Fiction</a>
-                        <a href="#" className="book-type"> Philosophy</a>
-                        <a href="#" className="book-type"> Biography</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Comedy</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Crime</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Documentary</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Drama</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Fantasy</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Film-Noir</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Horror</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Musical</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Mystery</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Romance</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Sci-Fi</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Thriller</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>War</a>
+                        <a href="#" className="book-type" onClick={handleGenreClick}>Western</a>
                     </div>
                 </div>
 

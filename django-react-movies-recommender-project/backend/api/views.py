@@ -1,16 +1,19 @@
 from .models import Note, Movie, Rating, Link
 from django.contrib.auth.models import User
 from rest_framework import generics
-from .serializers import UserSerializer, NoteSerializer
-from rest_framework.permissions import IsAuthenticated, AllowAny # DRF's permission classes.
-import requests
 from rest_framework.decorators import api_view
-from sklearn.neighbors import NearestNeighbors
+from rest_framework.permissions import IsAuthenticated, AllowAny # DRF's permission classes.
 from rest_framework.response import Response
+from rest_framework import status
+from sklearn.neighbors import NearestNeighbors
+from .serializers import UserSerializer, NoteSerializer
 import pandas as pd
 import numpy as np
-from rest_framework import status
+import requests
+import random
 from api.movie_recommendation_engine import recommend_movies
+from api.movie_recommendation_engine import recommend_by_genres
+from api.movie_recommendation_engine import genre_movie_titles
 
 API_KEY = "9d0e3e371ecee50a7c190f46aeafadec"
 
@@ -23,6 +26,18 @@ def fetch_recommendations(request):
     except Exception as e:
         return Response({"error": str(e)}, status=500)
 
+
+@api_view(['GET'])
+def fetch_recommendations_by_genre(request):
+    try:
+        movie_genre = request.query_params.get("genre")
+        movie_title = get_random_movie_by_genre(movie_genre)
+        print(movie_title)
+        recommendations = recommend_by_genres(movie_title)
+        return Response({'recommendations': recommendations})
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+    
 
 @api_view(['GET'])
 def fetch_movie_id(request):
@@ -101,26 +116,24 @@ def fetch_image_url(request):
             status=status.HTTP_404_NOT_FOUND)
 
 
+def get_random_movie_by_genre(genre):
+    # split the provided genre into individual genres (if it's a multi-genre filter)
+    genre = genre.lower()
 
-    
-   
+    # filter movies that contain the specified genre and whose title is in genre_movie_titles list
+    movies = Movie.objects.filter(
+        genres__icontains=genre,
+        title__in=genre_movie_titles
+    )
 
-    
-    
+    # if no movies are found, return None
+    if not movies:
+        return None
 
+    # randomly select one movie
+    random_movie = random.choice(movies)
 
-
-
-
-
-
-
-
-
-    
-
-    
-
+    return random_movie.title
 
 
 """
