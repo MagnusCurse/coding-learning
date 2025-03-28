@@ -1,5 +1,6 @@
 from .models import Note, Movie, Rating, Link
 from django.contrib.auth.models import User
+from django.db.models import Avg
 from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, AllowAny # DRF's permission classes.
@@ -57,7 +58,31 @@ def fetch_movie_id(request):
             {"error": "Movie not found"},
             status=status.HTTP_404_NOT_FOUND
         )
+
+
+@api_view(['GET'])
+def fetch_ratings_agg(request):
+    movie_id = request.query_params.get("movie_id")
+
+    if not movie_id:
+        return Response(
+            {"error": "Can't find the movie_id through the movie_title"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
     
+    ratings = Rating.objects.filter(movie_id = movie_id) # fetch all the ratings about this movie
+
+    if ratings.exists():
+        if ratings.exists():
+            count =  ratings.count()
+            average = ratings.aggregate(Avg('rating'))['rating__avg']
+            return Response({"ratings_count": count,
+                             "ratings_average": average}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+            {"error": "No ratings found for the given movie_id"},
+            status=status.HTTP_404_NOT_FOUND
+        )
 
 
 @api_view(['GET'])

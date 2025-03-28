@@ -148,6 +148,6 @@ def recommend_by_genres(movie_title):
     # find nearest neighbors
     distances, indices = genre_knn_model.kneighbors(genre_sparse[idx], n_neighbors=11)  # Get more to filter out
 
-    # exclude the movie itself and return top 10
-    recommendations = [genre_movie_titles[i] for i in indices[0] if i != idx][:10]
+    # exclude the movie itself and return top 6
+    recommendations = [genre_movie_titles[i] for i in indices[0] if i != idx][:6]
     return recommendations

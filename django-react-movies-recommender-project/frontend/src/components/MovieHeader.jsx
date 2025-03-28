@@ -94,7 +94,7 @@ function MovieHeader() {
                 }
             });
 
-            // fetch movie_id and rating for each recommendation
+            // fetch movie detail for each recommended movie
             const recommendationsWithDetails = await Promise.all(
                 recommendationsResponse.data.recommendations.map(async (movie_title) => {
                     // fetch movie_id using the title
