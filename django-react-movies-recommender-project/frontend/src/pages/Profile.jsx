@@ -1,4 +1,5 @@
 import '../styles/Profile.css'
+import defaultAvatar from '../assets/pic/default.png'
 import React, { useState } from 'react';
 
 function UserProfile() {
@@ -6,19 +7,13 @@ function UserProfile() {
   const [userData, setUserData] = useState({
     nickname: 'MovieBuff123',
     bio: 'I love sci-fi and fantasy films!',
-    avatar: 'path-to-avatar.jpg',
+    avatar: defaultAvatar,
     location: 'San Francisco, CA',
     birthdate: '1990-01-01',
   });
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleCancelClick = () => {
-    setIsEditing(false);
-  };
-
+  const handleEditClick = () => setIsEditing(true);
+  const handleCancelClick = () => setIsEditing(false);
   const handleSaveClick = () => {
     // TODO: Add save logic (e.g., API call)
     setIsEditing(false);
@@ -26,19 +21,14 @@ function UserProfile() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setUserData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleAvatarChange = (e) => {
-    // TODO: handle avatar file upload
-    // For now, just simulate a new avatar path
     const file = e.target.files[0];
     if (file) {
-      setUserData((prevData) => ({
-        ...prevData,
+      setUserData(prev => ({
+        ...prev,
         avatar: URL.createObjectURL(file),
       }));
     }
@@ -46,13 +36,11 @@ function UserProfile() {
 
   return (
     <div className="user-profile-page">
-      {/* Header/Banner */}
       <header className="profile-header">
         <h2>User Profile</h2>
       </header>
 
-      {/* Profile Card */}
-      <div className="profile-card">
+      <div className="profile-card animated-card">
         <div className="avatar-section">
           <img src={userData.avatar} alt="User Avatar" className="avatar" />
           {isEditing && (
@@ -67,16 +55,17 @@ function UserProfile() {
           )}
         </div>
 
-        {/* Display or Edit Mode */}
         {!isEditing ? (
           <div className="profile-info">
             <h3>{userData.nickname}</h3>
             <p className="location">{userData.location}</p>
             <p className="bio">{userData.bio}</p>
-            <button onClick={handleEditClick}>Edit Profile</button>
+            <button className="btn primary-btn" onClick={handleEditClick}>
+              Edit Profile
+            </button>
           </div>
         ) : (
-          <div className="profile-edit-form">
+          <div className="profile-edit-form animated-form">
             <div className="form-group">
               <label>Nickname</label>
               <input
@@ -111,16 +100,18 @@ function UserProfile() {
               />
             </div>
             <div className="button-row">
-              <button onClick={handleSaveClick}>Save</button>
-              <button onClick={handleCancelClick}>Cancel</button>
+              <button className="btn success-btn" onClick={handleSaveClick}>
+                Save
+              </button>
+              <button className="btn cancel-btn" onClick={handleCancelClick}>
+                Cancel
+              </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Additional Sections */}
       <div className="additional-panels">
-        {/* For example, a "My Watchlist" or "My Reviews" panel */}
         <section className="my-watchlist">
           <h3>My Watchlist</h3>
           {/* Render watchlist items here */}
