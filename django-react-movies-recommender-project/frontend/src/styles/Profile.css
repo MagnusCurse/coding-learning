@@ -1,0 +1,90 @@
+.user-profile-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'YourAppFont', sans-serif;
+  }
+  
+  .profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    /* Possibly use a pastel background gradient */
+  }
+  
+  .profile-card {
+    display: flex;
+    flex-direction: row;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .avatar-section {
+    margin-right: 2rem;
+    position: relative;
+  }
+  
+  .avatar {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  
+  .avatar-edit-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: #ffcccb; /* Example pastel color */
+    color: #333;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .profile-info h3 {
+    margin-top: 0;
+  }
+  
+  .location {
+    font-weight: bold;
+    color: #666;
+  }
+  
+  .bio {
+    margin: 1rem 0;
+  }
+  
+  .profile-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .button-row {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .additional-panels {
+    margin-top: 2rem;
+  }
+  
+  .my-watchlist {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  

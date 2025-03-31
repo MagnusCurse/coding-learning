@@ -7,6 +7,6 @@ class ApiConfig(AppConfig):
 
     def ready(self):
         from api.movie_recommendation_engine import initialize
-        # initialize()
+        initialize()
 
         

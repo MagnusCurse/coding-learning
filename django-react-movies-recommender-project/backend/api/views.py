@@ -1,13 +1,13 @@
-from .models import Note, Movie, Rating, Link
+from .models import Movie, Rating, Link, Profile
 from django.contrib.auth.models import User
 from django.db.models import Avg
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, AllowAny # DRF's permission classes.
 from rest_framework.response import Response
 from rest_framework import status
 from sklearn.neighbors import NearestNeighbors
-from .serializers import UserSerializer
+from .serializers import UserSerializer, ProfileSerializer
 import pandas as pd
 import numpy as np
 import requests
@@ -213,10 +213,17 @@ def get_movie_recommendations(request):
     movie_title = request.query_params.get("title")
 
 
+
 class CreateUserView(generics.CreateAPIView): 
     queryset = User.objects.all()
     serializer_class = UserSerializer # Specify the queryset to fetch all users
     permission_classes = [AllowAny] # Allows any user (even unauthenticated) to access this view
 
+class ProfileUpdateView(generics.UpdateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self):
+        return self.request.user.profile
 
