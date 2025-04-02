@@ -2,7 +2,7 @@ from .models import Movie, Rating, Link, Profile
 from django.contrib.auth.models import User
 from django.db.models import Avg
 from rest_framework import generics, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny # DRF's permission classes.
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,6 +15,7 @@ import random
 from api.movie_recommendation_engine import recommend_movies
 from api.movie_recommendation_engine import recommend_by_genres
 from api.movie_recommendation_engine import genre_movie_titles
+
 
 API_KEY = "9d0e3e371ecee50a7c190f46aeafadec"
 
@@ -141,6 +142,54 @@ def fetch_image_url(request):
             status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    try:
+        profile = request.user.profile # get the Profile instance
+        
+        # extract allowed fields from request data
+        allowed_fields = {
+            'nickname', 
+            'bio', 
+            'avatar_url', 
+            'location', 
+            'birth_date'
+        }
+
+        # filter request data to only keep allowed fields
+        data = {
+            field: request.data[field] 
+            for field in allowed_fields # iterate through each field in allowed_fields
+            # checks if a field exists in the request, If yes, add it to the new data dictionary
+            if field in request.data
+        }
+
+        # - existing profile instance
+        # - new data from request
+        # - partial=True allows updating individual fields (PATCH semantics)
+        serializer = ProfileSerializer(
+            instance=profile, # use the instance
+            data=data, 
+            partial=True  # allow partial updates
+        )
+        
+        if serializer.is_valid():
+            print("serializer is valid")
+            serializer.save()
+            # return updated profile data with 200 status
+            print(serializer.data)
+            return Response(serializer.data)
+        else:
+            print("Serializer errors:", serializer.errors)  
+            return Response(serializer.errors, status=400)
+
+    except Profile.DoesNotExist:
+        return Response({"error": "Profile not found"}, status=404)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+
 def get_random_movie_by_genre(genre):
     # split the provided genre into individual genres (if it's a multi-genre filter)
     genre = genre.lower()
@@ -159,59 +208,6 @@ def get_random_movie_by_genre(genre):
     random_movie = random.choice(movies)
 
     return random_movie.title
-
-
-"""
-I don't know why when I doing this, I always can't find the .pkl file, even though I actually have it, so this method can't work
-Hoping I can find a solution in the future
-"""
-@api_view(['GET'])
-def get_movie_recommendations(request):
-    print('get the request')
-    movie_pivot_indexed_collected = pd.read_pickle("../models/models_data/movie_pivot_indexed_collected.pkl")
-    movie_sparse = pd.read_pickle("../models/models_data/movie_sparse.pkl")
-
-    model = NearestNeighbors(algorithm='brute', metric='cosine')
-    model.fit(movie_sparse)
-
-    """
-    API endpoint to get movie recommendations based on a movie title provided as a query parameter.
-    Example URL: /api/recommendations/?title=Inception
-    """
-    try:
-        title = request.query_params.get("title")
-        if not title:
-            return Response({"error": "Please provide a movie title using the 'title' query parameter."}, status=400)
-        
-        # Search for the movie in the DataFrame
-        filtered = movie_pivot_indexed_collected[movie_pivot_indexed_collected["title"].str.lower() == title.lower()]
-        if filtered.empty: 
-            return Response({"error": f"Movie title '{title}' not found."}, status=404)
-        
-        # Assuming the title is unique, select the first match
-        movie_row = filtered.iloc[0]
-
-        # Get the movie_index from the DataFrame (adjust the column name if necessary)
-        movie_index = movie_row["index"] if "index" in movie_row else None
-
-        row = movie_pivot_indexed_collected.iloc[movie_index]  # Fetch the row corresponding to the given index
-        row_values = np.array(row[2:])  # Exclude index and title
-        
-        # Find nearest neighbors
-        distance, suggestions = model.kneighbors(row_values.reshape(1, -1), n_neighbors=6)
-        
-        # Extract movie recommendations
-        recommended_movies = []
-        for i in range(len(suggestions[0])):
-            index = int(suggestions[0][i])  # Convert to integer
-            recommended_movies.append(movie_pivot_indexed_collected.iloc[index]['title'])
-        
-        return Response({'recommended_movies': recommended_movies})
-
-    except IndexError:
-        return Response({'error': 'Invalid movie index'}, status=400)
-    movie_title = request.query_params.get("title")
-
 
 
 class CreateUserView(generics.CreateAPIView): 

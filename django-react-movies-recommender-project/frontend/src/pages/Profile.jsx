@@ -1,23 +1,56 @@
-import '../styles/Profile.css'
-import defaultAvatar from '../assets/pic/default.png'
+import '../styles/Profile.css';
+import api from "../api";
+import defaultAvatar from '../assets/pic/default.png';
 import React, { useState } from 'react';
 
 function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState({
-    nickname: 'MovieBuff123',
+    nickname: 'MovieBuff',
     bio: 'I love sci-fi and fantasy films!',
     avatar: defaultAvatar,
     location: 'San Francisco, CA',
     birthdate: '1990-01-01',
   });
 
-  const handleEditClick = () => setIsEditing(true);
-  const handleCancelClick = () => setIsEditing(false);
-  const handleSaveClick = () => {
-    // TODO: Add save logic (e.g., API call)
-    setIsEditing(false);
+  const handleSaveClick = async () => {
+    try {
+      // prepare the data for the backend
+      const updateData = {
+        // map frontend field names to backend expectations
+        nickname: userData.nickname,
+        bio: userData.bio,
+        avatar_url: userData.avatar, // assuming your backend expects 'avatar_url'
+        location: userData.location,
+        birth_date: userData.birthdate // match backend's birth_date field
+      };
+
+      const response = await api.patch('/api/user/profile/update/', 
+        updateData);
+  
+      // update local state with the response data
+      const updatedProfile = await response.data;
+      
+      setUserData(prev => ({
+        ...prev,
+        ...updatedProfile, // spread backend response
+        // frontend (userData) and backend (Profile model) use slightly different field names
+        birthdate: updatedProfile.birth_date,
+        avatar: updatedProfile.avatar_url // fix field name mismatch
+      }));
+  
+      setIsEditing(false);
+      alert('Profile updated successfully!');
+      
+    } catch (error) {
+      console.error('Update error:', error);
+      alert(`Update failed: ${error.message}`);
+    }
   };
+
+  const handleEditClick = () => setIsEditing(true);
+
+  const handleCancelClick = () => setIsEditing(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

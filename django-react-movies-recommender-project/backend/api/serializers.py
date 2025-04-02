@@ -32,15 +32,30 @@ class ProfileSerializer(serializers.ModelSerializer):
             'bio', 
             'avatar_url', 
             'location', 
-            'birth_date'
-        ]
+            'birth_date',
+            'created_at',
+            'updated_at'
+        ] # , # 👈 this fucking commmas shit causing the fucking 500 problem I debug all day, fuck!!!
+        # that comma at the end makes fields a tuple with one element (the list) instead of just a list.
+
+        # all these fields are optional in API requests. 
+        # the client can send any subset of these fields, and the API will still accept the request.
+        extra_kwargs = {
+            'nickname': {'required': False},
+            'bio': {'required': False},
+            'avatar_url': {'required': False},
+            'location': {'required': False},
+            'birth_date': {'required': False},
+            'created_at': {'required': False},
+            'updated_at': {'required': False}
+        }
 
 
 class MovieSerializer(serializers.ModelSerializer):
-    # The Meta class defines the model and fields to serialize
+    # the Meta class defines the model and fields to serialize
     class Meta:
-        model = Movie  # Specify the Movie model
-        fields = ["id", "title", "genres"]  # These are the fields to include in the serialized data
+        model = Movie  # specify the Movie model
+        fields = ["id", "title", "genres"]  # these are the fields to include in the serialized data
 
 
 class RatingSerializer(serializers.ModelSerializer):

@@ -84,21 +84,23 @@ class Profile(models.Model):
     user = models.OneToOneField(User, 
                                 on_delete=models.CASCADE, # delete profile when user is deleted
                                 related_name='profile') # access profile via user.profile ??
-    nickname = models.CharField(max_length=30, unique=True, blank=True)
-    bio = models.TextField(max_length=500, blank=True)
-    avatar_url = models.URLField(
+    
+    nickname = models.CharField(max_length=30, blank=True, null=True)
+    bio = models.TextField(max_length=500, blank=True, null=True)
+    avatar_url = models.CharField(
         max_length=500,
         blank=True,
+        null=True,
         default='../../frontend/src/assets/pic/default.png'
     )
-    location = models.CharField(max_length=100, blank=True)
+    location = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     # Meta class to specify the table name
     class Meta:
-        db_table = 'tb_profile'  
+        db_table = 'tb_profile' 
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
