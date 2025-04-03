@@ -8,7 +8,7 @@ function MainWrapper() {
      // this will run once when the component mounts
      useEffect(() => {
         
-        // fetchRecommendationsByGenre();
+        fetchRecommendationsByGenre("Comedy");
     }, []);  // Empty dependency array = runs only once
 
     // Handle genre click

@@ -15,6 +15,7 @@ import random
 from api.movie_recommendation_engine import recommend_movies
 from api.movie_recommendation_engine import recommend_by_genres
 from api.movie_recommendation_engine import genre_movie_titles
+from api.movie_recommendation_engine import movie_titles
 
 
 API_KEY = "9d0e3e371ecee50a7c190f46aeafadec"
@@ -188,6 +189,27 @@ def update_profile(request):
         return Response({"error": "Profile not found"}, status=404)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profile(request):
+    """
+    Retrieve the profile for the authenticated user.
+    """
+    try:
+        # access the profile via the OneToOne relationship on the user
+        profile = request.user.profile
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+    except Profile.DoesNotExist:
+        return Response({"error": "Profile not found"}, status=404)
+
+
+@api_view(['GET'])
+def fetch_random_movie_title(request):
+    random_movie_title = random.choice(movie_titles)
+    return Response(random_movie_title)
 
 
 def get_random_movie_by_genre(genre):

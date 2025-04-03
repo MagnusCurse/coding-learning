@@ -14,7 +14,19 @@ function MovieHeader() {
     const carouselRef = useRef(null);
     const isMounted = useRef(false); // Track mount state
 
-    // Initialize/destroy Flickity
+    // Initialize the search recommendation
+    useEffect(() => {
+        // Initialization effect - runs ONLY on mount
+        isMounted.current = true;
+        initialize(); // Fetch random movie and first recommendations
+        
+        return () => {
+          isMounted.current = false;
+        };
+      }, []); // Empty dependency array = runs once
+
+
+    // Initialize / destroy Flickity
     useEffect(() => {
         isMounted.current = true;
         
@@ -52,6 +64,23 @@ function MovieHeader() {
         };
     }, [recommendations]); // Re-run when recommendations change
 
+
+    // initialize the search recommendation with random movie title
+    const initialize = async() => {
+        try {
+            const response = await api.get(`/api/movie/fetch_random_movie_title/`);
+            const random_movie_title = response.data;
+
+            // set the search term to show in the input
+            setSearchTerm(random_movie_title);
+
+            await handleSearch(random_movie_title);
+        } catch (error) {
+            console.error("Error initializing recommendations:", error);
+        }
+    }
+
+    
     // function to handle input change
     const handleInputChange = (event) => {
         setSearchTerm(event.target.value);
@@ -66,22 +95,14 @@ function MovieHeader() {
         }
     };
 
-    // function to get the image url of the poster
-    // still need to know more about the async and await function 👈 
-    // const getImgUrlByTMBD = (movie_id) => { 
-    //     const imageUrlResponse = api.get(`/api/movie/fetch_image_url/`, {
-    //         params: {
-    //             movie_id: movie_id // sending the movie_id as a query
-    //         }
-    //     });
-
-    //     const image_url = imageUrlResponse.data.poster_url;
-    //     return image_url;
-    // }
-
+    
     // function to handle the result of the search
-    const handleSearch = async () => {
-        if(!searchTerm.trim()) {
+    const handleSearch = async (customTitle) => {
+        const searchQuery = customTitle || searchTerm.trim();
+
+        console.log(searchQuery);
+
+        if(!searchQuery) {
             return; // prevent empty searches
         }
         try {
@@ -90,7 +111,7 @@ function MovieHeader() {
 
             const recommendationsResponse = await api.get(`/api/movie/recommendations/`, {
                 params: {
-                    title: searchTerm // sending search term as a query
+                    title: searchQuery // sending search term as a query
                 }
             });
 

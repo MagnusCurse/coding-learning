@@ -1,7 +1,7 @@
 import '../styles/Profile.css';
 import api from "../api";
 import defaultAvatar from '../assets/pic/default.png';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -12,6 +12,27 @@ function UserProfile() {
     location: 'San Francisco, CA',
     birthdate: '1990-01-01',
   });
+
+
+  useEffect(() => {
+    initProfile(); // initialize the profile information
+  }, []);
+
+  const initProfile = async () => {
+    try {
+      const response = await api.get('/api/user/fetch_profile/');
+      // Map backend fields to frontend state if needed.
+      const profileData = response.data;
+      setUserData(prev => ({
+        ...prev,
+        ...profileData,
+        birthdate: profileData.birth_date,
+        avatar: profileData.avatar_url,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch profile:', error);
+    }
+  };
 
   const handleSaveClick = async () => {
     try {
@@ -90,9 +111,10 @@ function UserProfile() {
 
         {!isEditing ? (
           <div className="profile-info">
-            <h3>{userData.nickname}</h3>
-            <p className="location">{userData.location}</p>
-            <p className="bio">{userData.bio}</p>
+            <h3> {userData.nickname} </h3>
+            <p className="location"> {userData.location} </p>
+            <p className="bio"> {userData.bio} </p>
+            <p className='bio'> {userData.birthdate} </p>
             <button className="btn primary-btn" onClick={handleEditClick}>
               Edit Profile
             </button>

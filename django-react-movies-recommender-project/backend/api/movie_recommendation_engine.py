@@ -136,7 +136,7 @@ def recommend_movies(movie_title):
     return [movie_titles[i] for i in indices[0] if i != idx][:5]  # exclude self and get top 5
 
 def recommend_by_genres(movie_title):
-    global genre_title_to_index, genre_knn_model, genre_sparse, genre_movie_titles
+    global genre_title_to_index, genre_knn_model, genre_sparse, genre_movie_titles 
 
     if not genre_title_to_index:
         return ["system not initialized"]
@@ -146,7 +146,7 @@ def recommend_by_genres(movie_title):
         return ["movie not found"]
 
     # find nearest neighbors
-    distances, indices = genre_knn_model.kneighbors(genre_sparse[idx], n_neighbors=11)  # Get more to filter out
+    distances, indices = genre_knn_model.kneighbors(genre_sparse[idx], n_neighbors=11)  # get more to filter out
 
     # exclude the movie itself and return top 6
     recommendations = [genre_movie_titles[i] for i in indices[0] if i != idx][:6]
