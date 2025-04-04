@@ -91,6 +91,13 @@ function UserProfile() {
   return (
     <div className="user-profile-page">
       <header className="profile-header">
+        {/* Added Back Home Button */}
+        <button 
+          className="btn primary-btn back-home-btn"
+          onClick={() => window.location.href = 'http://localhost:5173/'}
+        >
+          Back Home
+        </button>
         <h2>User Profile</h2>
       </header>
 
