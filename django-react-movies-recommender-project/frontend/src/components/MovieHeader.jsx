@@ -2,14 +2,18 @@ import "../styles/MovieHeader.scss";
 import "../styles/MovieSlider.scss"
 import { useState, useEffect } from "react";
 import api from "../api";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import React, { useRef } from 'react';  // Add this at the very top of your file
 import 'flickity/css/flickity.css'; // Import Flickity CSS
 import Flickity from 'flickity';   // Import Flickity JS
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function MovieHeader() {
-    const [searchTerm, setSearchTerm] = useState("")
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showMenu, setShowMenu] = useState(false);
     const [recommendations, setRecommendations] = useState([]);
-
+    
     const flickityRef = useRef(null);
     const carouselRef = useRef(null);
     const isMounted = useRef(false); // Track mount state
@@ -80,12 +84,25 @@ function MovieHeader() {
         }
     }
 
-    
+    const handleLogout = async () => {
+        try {
+            localStorage.removeItem(ACCESS_TOKEN);
+            localStorage.removeItem(REFRESH_TOKEN); // remove both tokens from localStorage
+
+            // redirect to login page after logout
+            window.location.href = '/login'; // full page reload to clear state
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
+
+
     // function to handle input change
     const handleInputChange = (event) => {
         setSearchTerm(event.target.value);
         // console.log(event.target.value);
     };
+
 
     // function to handle Enter key press
     const handleKeyPress = (event) => {
@@ -194,13 +211,38 @@ function MovieHeader() {
                     <div className="user-profile">
                         {/* Additionally, in JSX, the <img> tag should be self-closing. In HTML, <img> tags can be self-closing, 
                         but in JSX (which is what React uses), you need to explicitly close the <img> tag with a / at the end of it, like this: <img />. */}
+                        
                         <img src="https://randomuser.me/api/portraits/women/63.jpg" alt="" className="user-img" />
                     </div>
-                    <div className="profile-menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-menu">
-                    <path d="M3 12h18M3 6h18M3 18h18" /></svg>
-                    Menu
-                </div>
+                    <div className="profile-menu-container">
+                        <div 
+                            className="profile-menu" 
+                            onClick={() => setShowMenu(!showMenu)}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" 
+                                stroke="currentColor" strokeWidth="2" strokeLinecap="round" 
+                                strokeLinejoin="round" className="feather feather-menu">
+                            <path d="M3 12h18M3 6h18M3 18h18" />
+                            </svg>
+                            Menu
+                        </div>
+
+                        <div className={`profile-menu-options ${showMenu ? 'visible' : ''}`}>
+                            <Link 
+                            to="/profile" 
+                            className="menu-item"
+                            onClick={() => setShowMenu(false)}
+                            >
+                            Profile
+                            </Link>
+                            <button 
+                            className="menu-item"
+                            onClick={handleLogout}
+                            >
+                            Logout
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
