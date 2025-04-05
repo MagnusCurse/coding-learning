@@ -1,5 +1,5 @@
 import "../styles/MovieHeader.scss";
-import "../styles/MovieSlider.scss"
+import "../styles/MovieSlider.scss";
 import { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
@@ -11,8 +11,14 @@ import { useNavigate } from 'react-router-dom';
 
 function MovieHeader() {
     const [searchTerm, setSearchTerm] = useState("");
-    const [showMenu, setShowMenu] = useState(false);
+    const [showMenu, setShowMenu] = useState(false); // state for homepage menu
     const [recommendations, setRecommendations] = useState([]);
+
+    // state for the movie rating hover interface
+    const [showRatingModal, setShowRatingModal] = useState(false);
+    const [selectedRating, setSelectedRating] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0);
+    const [currentMovie, setCurrentMovie] = useState(null);
     
     const flickityRef = useRef(null);
     const carouselRef = useRef(null);
@@ -69,6 +75,69 @@ function MovieHeader() {
     }, [recommendations]); // Re-run when recommendations change
 
 
+    const handleRateClick = (movie) => {
+        setCurrentMovie(movie);
+        setShowRatingModal(true);
+    };
+
+
+    const handleConfirmRating = async () => {
+        try {
+          // Called the rating backend method here
+          // Update local state or refetch data
+          setShowRatingModal(false);
+        } catch (error) {
+          console.error('Rating failed:', error);
+        }
+    };
+
+
+    // Rating Modal component
+    const RatingModal = () => (
+        <div className="rating-modal-overlay">
+            <div className="rating-modal">
+                <div className="rating-stars">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <div 
+                            key={star}
+                            className="star-container"
+                            onMouseMove={(e) => {
+                                const rect = e.target.getBoundingClientRect();
+                                const isHalf = e.clientX - rect.left < rect.width / 2;
+                                setHoverRating(star - 0.5 + (isHalf ? 0 : 0.5));
+                            }}
+                            onMouseLeave={() => setHoverRating(0)}
+                            onClick={() => setSelectedRating(hoverRating)}
+                        >
+                            {/* ? stars ? */}
+                            <div className={`star-background ${(hoverRating || selectedRating) >= star ? 'active' : ''}`}>
+                                ★
+                            </div>
+                            <div className={`star-foreground ${(hoverRating || selectedRating) >= star - 0.5 ? 'active' : ''}`}>
+                                ★
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="rating-buttons">
+                    <button 
+                        className="btn confirm-btn"
+                        onClick={handleConfirmRating}
+                    >
+                        Confirm
+                    </button>
+                    <button 
+                        className="btn cancel-btn"
+                        onClick={() => setShowRatingModal(false)}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+
     // initialize the search recommendation with random movie title
     const initialize = async() => {
         try {
@@ -83,6 +152,7 @@ function MovieHeader() {
             console.error("Error initializing recommendations:", error);
         }
     }
+
 
     const handleLogout = async () => {
         try {
@@ -296,11 +366,21 @@ function MovieHeader() {
 
                                     <div className="book-sum"> The hunt htmlFor each splinter of Paul's soul sends Marguerite racing through a war-torn San Francisco.  </div>
                                     <div className={`book-see book-blue`}> See The Movie </div>
+                                    {/* the button to rate the movie */}
+                                    <button 
+                                        className="book-rate"
+                                        onClick={() => handleRateClick(movie)}
+                                    >
+                                        Rate This
+                                    </button>
+                                    
                                 </div>
                             </div>
+                            
                         );
                     })}
                 </div>
+                {showRatingModal && <RatingModal />}
             </div>
         </div>
     )
