@@ -144,6 +144,62 @@ def fetch_image_url(request):
             status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['GET'])
+def fetch_movie_detail(request):
+    movie_id = request.query_params.get("movie_id")
+
+    if not movie_id:
+        return Response(
+            {"error": "Can't find the movie_id through the movie_title"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    link = Link.objects.get(movie_id=movie_id)
+
+    tmbd_id = link.tmbd_id
+    
+    try:
+        # fetch movie details with credits appended
+        tmdb_response = requests.get(
+            f"https://api.themoviedb.org/3/movie/{tmbd_id}",
+            params={
+                "api_key": API_KEY,
+                "append_to_response": "credits"  # get credits data
+            }
+        )
+        tmdb_response.raise_for_status()  # raise exception for HTTP errors
+        movie_data = tmdb_response.json()  # get the movie_data of tmdb
+    except requests.exceptions.RequestException as e:
+        return Response(
+            {"error": f"Failed to fetch data from TMDB: {str(e)}"},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE
+        )
+
+   
+    imdb_id = movie_data.get("imdb_id")   # IMDb Page URL (if available)
+    imdb_url = f"https://www.imdb.com/title/{imdb_id}" if imdb_id else None
+
+    synopsis = movie_data.get("overview", "No synopsis available")  # get the synopsis of the movie
+
+    crew = movie_data.get("credits", {}).get("crew", [])  # director (from credits)
+    director = next(
+        (member["name"] for member in crew if member.get("job") == "Director"),
+        None  # default if no director found
+    )
+
+    cast = movie_data.get("credits", {}).get("cast", [])  # top 5 actors (from credits)
+    actors = [actor["name"] for actor in cast[:5] if actor.get("name")]
+
+    response_data = {  # compile response data
+        "imdb_url": imdb_url,
+        "synopsis": synopsis,
+        "director": director,
+        "actors": actors
+    }
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):

@@ -10,6 +10,7 @@ urlpatterns = [
     path("movie/fetch_ratings/agg/", views.fetch_ratings_agg, name="fetch_ratings_agg"),
     path("movie/rate_movie/", views.rate_movie, name="rate_movie"),
     path("movie/fetch_image_url/", views.fetch_image_url, name="fetch_image_url"),
+    path("movie/fetch_detail/", views.fetch_movie_detail, name="fetch_movie_detail"),
     path("user/profile/update/", views.update_profile, name="update_profile"),
     path("user/fetch_profile/", views.get_profile, name="fetch_profile")
 ]

@@ -253,22 +253,50 @@ function MovieHeader() {
 
                     const top_ratings = ratingResponse.data.top_ratings || []; // Default to empty array if no ratings exist
                     
+                    // fetcg rating agg using movie_id
+                    const ratingAggResponse = await api.get('/api/movie/fetch_ratings/agg/', {
+                        params: { movie_id }
+                    });
+
+                    const ratings_average = ratingAggResponse.data.ratings_average;
+                    const ratings_count = ratingAggResponse.data.ratings_count;
+                    
                     // if you want to transform the data:
                     const processedRatings = top_ratings.map(rating => ({
                         userId: rating.user_id,
                         score: rating.rating
                     }));
 
-                    console.log("Movie ID:", ratingResponse.data.movie_id);
-                    console.log("Image_URL", image_url);
-                    console.log("Top Ratings:", processedRatings);
+                    // fetch the movie detailed info
+                    const detailResponse = await api.get(`/api/movie/fetch_detail/`, {
+                        params: {
+                            movie_id: movie_id // sending the movie_id as a query
+                        }
+                    });
 
-                    // Return the structured data
+                    const movieDetail = detailResponse.data;
+
+                    const imdb_url = movieDetail.imdb_url;
+                    const synopsis = movieDetail.synopsis;
+                    const director = movieDetail.director;
+                    const actors = movieDetail.actors;
+
+                    // console.log("Movie ID:", ratingResponse.data.movie_id);
+                    // console.log("Image_URL", image_url);
+                    // console.log("Top Ratings:", processedRatings);
+
+                    // return the structured data
                     return {
                         title: movie_title,
                         id: movie_id,
                         image_url: image_url,
-                        ratings: processedRatings,
+                        imdb_url: imdb_url,
+                        synopsis: synopsis,
+                        director: director,
+                        actors: actors,
+                        ratings_count: ratings_count,
+                        ratings_average, ratings_average,
+                        ratings: processedRatings
                     };
                 })
             );
@@ -368,7 +396,7 @@ function MovieHeader() {
                                 </div>
                                 <div className="book-content">
                                     <div className="book-title"> { movie.title } </div>
-                                    <div className="book-author">by Claudia Gray</div>
+                                    <div className="book-author">by { movie.director } </div>
                                     <div className="rate">
                                         {/* Got some error with the show of the stars */}
                                         <fieldset className="rating blue">
@@ -385,12 +413,20 @@ function MovieHeader() {
                                         </fieldset>
 
                                         <span className="book-voters">
-                                        {movie.ratings.length} ratings (Avg: {average.toFixed(1)})
+                                        { movie.ratings_count } ratings (Avg: {Number(movie.ratings_average).toFixed(1)})
                                         </span>
                                     </div>
 
-                                    <div className="book-sum"> The hunt htmlFor each splinter of Paul's soul sends Marguerite racing through a war-torn San Francisco.  </div>
-                                    <div className={`book-see book-blue`}> See The Movie </div>
+                                    <div className="book-sum"> { movie.synopsis } </div>
+                                    <a 
+                                        href={ movie.imdb_url } 
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{ textDecoration: 'none' }}
+                                    >
+                                        <div className={`book-see book-blue`}> See The Movie </div>
+                                    </a>
+                                    
                                     {/* the button to rate the movie */}
                                     <button 
                                         className="book-rate"
