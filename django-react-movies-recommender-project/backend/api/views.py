@@ -1,6 +1,7 @@
 from .models import Movie, Rating, Link, Profile
 from django.contrib.auth.models import User
 from django.db.models import Avg
+from django.utils import timezone
 from rest_framework import generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny # DRF's permission classes.
@@ -212,6 +213,51 @@ def fetch_random_movie_title(request):
     return Response(random_movie_title)
 
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def rate_movie(request):
+
+    try:
+        user_id = int(request.user.id) 
+        print(f"user_id: {user_id}")  # use f-string for safe string formatting
+        
+        movie_id = int(request.data["movie_id"])
+        rating_value = float(request.data["rating"])
+  
+        print(movie_id)
+        print(rating_value)
+
+        # add explicit parameter checks
+        if not all([movie_id, rating_value]):
+            raise ValueError
+
+
+    except (TypeError, ValueError):
+        return Response(
+            {"detail": "Invalid or missing user_id, movie_id or rating."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    rating_obj, created = Rating.objects.update_or_create(  # ceate or update the rating
+        user_id=user_id,
+        movie_id=movie_id,
+        defaults={
+            'rating': rating_value,
+            'timestamp': timezone.now()
+        }
+    )
+
+    data = {
+        "user_id":    rating_obj.user_id,
+        "movie_id":   rating_obj.movie_id,
+        "rating":     rating_obj.rating,
+        "timestamp":  rating_obj.timestamp.isoformat(),
+        "created":    created
+    }  # prepare response data
+
+    return Response(data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+    
+
 def get_random_movie_by_genre(genre):
     # split the provided genre into individual genres (if it's a multi-genre filter)
     genre = genre.lower()
@@ -236,6 +282,7 @@ class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer # Specify the queryset to fetch all users
     permission_classes = [AllowAny] # Allows any user (even unauthenticated) to access this view
+
 
 class ProfileUpdateView(generics.UpdateAPIView):
     queryset = Profile.objects.all()

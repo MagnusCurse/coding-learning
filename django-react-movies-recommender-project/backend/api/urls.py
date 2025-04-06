@@ -8,6 +8,7 @@ urlpatterns = [
     path("movie/fetch_movie_ratings/", views.fetch_rating, name="fetch_rating"),
     path("movie/fetch_random_movie_title/", views.fetch_random_movie_title, name="fetch_random_movie_title"),
     path("movie/fetch_ratings/agg/", views.fetch_ratings_agg, name="fetch_ratings_agg"),
+    path("movie/rate_movie/", views.rate_movie, name="rate_movie"),
     path("movie/fetch_image_url/", views.fetch_image_url, name="fetch_image_url"),
     path("user/profile/update/", views.update_profile, name="update_profile"),
     path("user/fetch_profile/", views.get_profile, name="fetch_profile")

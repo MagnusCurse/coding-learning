@@ -9,6 +9,8 @@ import Flickity from 'flickity';   // Import Flickity JS
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
+
+
 function MovieHeader() {
     const [searchTerm, setSearchTerm] = useState("");
     const [showMenu, setShowMenu] = useState(false); // state for homepage menu
@@ -82,14 +84,37 @@ function MovieHeader() {
 
 
     const handleConfirmRating = async () => {
-        try {
-          // Called the rating backend method here
-          // Update local state or refetch data
-          setShowRatingModal(false);
-        } catch (error) {
-          console.error('Rating failed:', error);
+        if (!selectedRating) return
+
+        console.log(currentMovie.id); // test the movie_id if right
+
+        const ratingData = {
+            movie_id: currentMovie.id, // get the id from currentMovie
+            rating: selectedRating
         }
-    };
+    
+        try {
+          const response = await api.put('/api/movie/rate_movie/', 
+            ratingData)
+    
+          // response.data contains { user_id, movie_id, rating, timestamp, created }
+          console.log('Rated:', response.data)
+    
+          // close modal
+          setShowRatingModal(false)
+    
+          // optionally: show a success message / toast
+          alert(`You rated this movie ${selectedRating} stars!`)
+    
+          // optionally: update local movie object or parent state
+          // setMovie(prev => ({ ...prev, yourRating: response.data.rating }))
+    
+        } catch (err) {
+          console.error('Error submitting rating:', err)
+          // optionally: show an error toast
+          // toast.error('Could not submit rating.')
+        }
+    }
 
 
     // Rating Modal component
@@ -373,7 +398,6 @@ function MovieHeader() {
                                     >
                                         Rate This
                                     </button>
-                                    
                                 </div>
                             </div>
                             
