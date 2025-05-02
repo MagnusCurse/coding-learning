@@ -6,12 +6,14 @@ import { useState, useEffect } from "react";
 
 
 function ProtectedRoute({ children }) {
-    const [isAuthorized, setIsAuthorized] = useState(null);
+    const [isAuthorized, setIsAuthorized] = useState(null);  // State to track whether the user is authorized
 
     useEffect(() => {
+        // Call the auth function to check token validity
         auth().catch(() => setIsAuthorized(false))
     }, [])
 
+    // Function to refresh the access token using the refresh token
     const refreshToken = async () => {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN);
         try {
@@ -30,6 +32,7 @@ function ProtectedRoute({ children }) {
         }
     };
 
+    // Function to check if the access token is valid
     const auth = async () => {
         const token = localStorage.getItem(ACCESS_TOKEN);
         if (!token) {
@@ -47,10 +50,12 @@ function ProtectedRoute({ children }) {
         }
     };
 
+    // While checking authentication status, show a loading screen
     if (isAuthorized === null) {
         return <div>Loading...</div>;
     }
 
+    // If authorized, render the protected content; otherwise, redirect to login
     return isAuthorized ? children : <Navigate to="/login" />;
 }
 

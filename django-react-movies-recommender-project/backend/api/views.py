@@ -1,4 +1,4 @@
-from .models import Movie, Rating, Link, Profile
+from .models.models import Movie, Rating, Link, Profile
 from django.contrib.auth.models import User
 from django.db.models import Avg
 from django.utils import timezone

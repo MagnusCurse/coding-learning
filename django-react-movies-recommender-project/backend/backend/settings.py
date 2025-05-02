@@ -10,12 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from pathlib import Path  # importing Path from pathlib to work with file system paths in an object-oriented way
 from pathlib import Path
 from datetime import timedelta
-from dotenv import load_dotenv
-import os
+from dotenv import load_dotenv  # importing load_dotenv from the dotenv package to load environment variables from a .env file
+import os  # importing os to access environment variables and interact with the operating system
 
-load_dotenv()
+load_dotenv()  # this line loads the environment variables from a `.env` file into the system's environment.
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,8 +31,12 @@ SECRET_KEY = "django-insecure-nma=xi6x2p-crjg^ifqqkapyu1qjd0l=+wn)-rijk_o%$!k3w_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# ALLOWED_HOSTS tells Django which hosts/domains this site can serve.
+# ["*"] means allow all hosts — usually used for development only.
 ALLOWED_HOSTS = ["*"]
 
+
+# JWT CONFIGURAION
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -41,12 +46,18 @@ REST_FRAMEWORK = {
     ],
 }
 
+
 SIMPLE_JWT = {
+    # This sets the lifetime of the access token to 30 minutes. 
+    # After 30 minutes, users need to use a refresh token to get a new access token.
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    # This sets the lifetime of the refresh token to 1 day.
+    # Users can use this to get new access tokens without logging in again during this period.
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
-# Application definition
+# INSTALLED_APPS is a setting in your Django project’s settings.py file. 
+# It tells Django which apps are active and should be included in the project.
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -55,11 +66,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "api",
-    "rest_framework",
-    "corsheaders",
+    "api",  # My custom app
+    "rest_framework",  # Django REST Framework — a powerful toolkit for building Web APIs
+    "corsheaders",  # Enables Cross-Origin Resource Sharing (CORS), useful when frontend and backend are on different domains/ports
 ]
 
+# MIDDLEWARE is a list of middleware components that process requests and responses globally in your Django application.
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -68,6 +80,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+     # enables Cross-Origin Resource Sharing (CORS) — allows your backend to be accessed from a frontend on another domain/port
     "corsheaders.middleware.CorsMiddleware",
 ]
 
@@ -148,5 +161,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# This setting allows **all domains** to make requests to your backend API.
+# It's useful during development when your frontend (like React/Vue) is running on a different port.
 CORS_ALLOW_ALL_ORIGINS = True
+
+# This allows browsers to send **credentials** like cookies, authorization headers, or TLS client certificates.
+# It’s important if you're doing login sessions or sending tokens with cross-origin requests.
 CORS_ALLOWS_CREDENTIALS = True

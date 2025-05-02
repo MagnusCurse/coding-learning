@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Movie, Rating, Link, Profile
+from .models.models import Movie, Rating, Link, Profile
 
 
 # Serializers in DRF are used to convert complex data types like Django models into Python data types 
