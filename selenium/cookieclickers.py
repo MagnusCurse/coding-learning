@@ -50,7 +50,7 @@ while True:
             continue
 
         product_price = int(product_price)
-
+      
         if cookies_count >= product_price:
             product = driver.find_element(By.ID, product_prefix + str(i)) # Find the product element
             product.click()
