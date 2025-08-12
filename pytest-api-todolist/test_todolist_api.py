@@ -64,6 +64,7 @@ def test_can_update_task():
     assert get_task_data.get('user_id') == new_payload.get('user_id')
     assert get_task_data.get('is_done') == new_payload.get('is_done')
 
+
 # create a task in a loop
 # list the tasks
 # assert the number of tasks is the same as the number of tasks created
@@ -82,6 +83,24 @@ def test_can_list_tasks():
     assert len(tasks) == n  # assert the number of tasks is the same as the number of tasks created
 
 
+# create a task
+# delete the task
+# try to get the deleted task
+# assert that the task is not found after deleting
+def test_can_delete_task():
+    payload = new_task_payload()
+    create_task_response = create_task(payload)
+    assert create_task_response.status_code == 200
+    task_id = create_task_response.json().get("task").get("task_id")
+
+    delete_task_response = delete_task(task_id)  # delete the task
+    assert delete_task_response.status_code == 200
+
+    # get the task and check that it's not found
+    get_task_response = get_task(task_id)
+    assert get_task_response.status_code == 404
+
+
 def create_task(payload):
     return requests.put(ENDPOINT + "/create-task", json=payload)
 
@@ -94,6 +113,8 @@ def list_tasks(user_id):
 def get_task(task_id):
     return requests.get(ENDPOINT + f"/get-task/{task_id}")
 
+def delete_task(task_id):
+    return requests.delete(ENDPOINT + f"/delete-task/{task_id}")
 
 def new_task_payload():
     # make sure the user_id and content are unique everytime we create a new task
