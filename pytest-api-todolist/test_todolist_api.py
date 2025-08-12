@@ -1,4 +1,5 @@
 import requests
+import uuid
 
 ENDPOINT = "https://todo.pixegami.io/"
 
@@ -63,6 +64,23 @@ def test_can_update_task():
     assert get_task_data.get('user_id') == new_payload.get('user_id')
     assert get_task_data.get('is_done') == new_payload.get('is_done')
 
+# create a task in a loop
+# list the tasks
+# assert the number of tasks is the same as the number of tasks created
+def test_can_list_tasks():
+    payload = new_task_payload()
+    n = 3
+    for _ in range(n):
+        create_task_response = create_task(payload)
+        assert create_task_response.status_code == 200
+    
+    list_tasks_response = list_tasks(payload.get('user_id'))
+    assert list_tasks_response.status_code == 200
+    list_tasks_data = list_tasks_response.json()
+
+    tasks = list_tasks_data.get('tasks') # get the tasks from the list_tasks_data
+    assert len(tasks) == n  # assert the number of tasks is the same as the number of tasks created
+
 
 def create_task(payload):
     return requests.put(ENDPOINT + "/create-task", json=payload)
@@ -70,14 +88,21 @@ def create_task(payload):
 def update_task(payload):
     return requests.put(ENDPOINT + "/update-task", json=payload)
 
+def list_tasks(user_id):
+    return requests.get(ENDPOINT + f"/list-tasks/{user_id}")
+
 def get_task(task_id):
     return requests.get(ENDPOINT + f"/get-task/{task_id}")
 
 
 def new_task_payload():
+    # make sure the user_id and content are unique everytime we create a new task
+    user_id = f"test_user_{uuid.uuid4().hex}"  # generate a random user_id
+    content = f"test_content_{uuid.uuid4().hex}"  # generate a random content
+
     return {
-        "content": "test_content",
-        "user_id": "234534234234",
+        "content": content,
+        "user_id": user_id,
         "is_done": False
     }
 
